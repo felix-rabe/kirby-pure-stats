@@ -2,7 +2,7 @@
 
 Page-view stats for websites running with Kirby CMS.
 
-On each page visit, the page identifier and date are stored in a local SQLite database and visualized in the Kirby Panel.
+On each page visit, the page identifier and date are stored in a local SQLite database and visualized in the Panel.
 
 No IPs.<br>
 No cookies.<br>
