@@ -6,6 +6,8 @@ Pure Stats provides simple website statistics directly in the Kirby
 Panel. It tracks pageviews without cookies or external analytics
 services and stores all analytics data locally in a SQLite database.
 
+![Pure Stats in the Kirby Panel](assets/pure-stats-panel.png)
+
 ## Features
 
 -   Pageview tracking
