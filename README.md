@@ -12,13 +12,15 @@ No cookies.
 No identification.  
 Pure stats.
 
+![Kirby Pure Stats Panel](assets/pure-stats-panel.png)
+
 ## Installation
 
 Download or clone this repository into:
 
 `site/plugins/kirby-pure-stats`
 
-Pure Stats will then appear as “Stats” in the Kirby Panel.
+Pure Stats will then appear as “Stats” in the Kirby Panel Navigation.
 
 ## Features
 

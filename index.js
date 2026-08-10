@@ -294,14 +294,7 @@ panel.plugin("felix-rabe/pure-stats", {
           if (this.range === "year") {
             const result = [];
 
-            const isCurrentYear =
-              this.selectedYear ===
-              this.today.getFullYear();
-
-            const lastMonth =
-              isCurrentYear
-                ? this.today.getMonth()
-                : 11;
+            const lastMonth = 11;
 
             for (
               let month = 0;
@@ -350,7 +343,10 @@ panel.plugin("felix-rabe/pure-stats", {
                   ) +
                   " " +
                   this.selectedYear,
-                hits
+                hits,
+                future:
+                this.selectedYear === this.today.getFullYear() &&
+                month > this.today.getMonth()
               });
             }
 
@@ -364,20 +360,12 @@ panel.plugin("felix-rabe/pure-stats", {
           if (this.range === "month") {
             const result = [];
 
-            const isCurrentMonth =
-              this.selectedYear ===
-                this.today.getFullYear() &&
-              this.selectedMonth ===
-                this.today.getMonth();
-
             const lastDay =
-              isCurrentMonth
-                ? this.today.getDate()
-                : new Date(
-                    this.selectedYear,
-                    this.selectedMonth + 1,
-                    0
-                  ).getDate();
+              new Date(
+                this.selectedYear,
+                this.selectedMonth + 1,
+                0
+              ).getDate();
 
             for (
               let day = 1;
@@ -405,7 +393,11 @@ panel.plugin("felix-rabe/pure-stats", {
                 tooltip:
                   this.formatDate(date),
                 hits:
-                  values[date] ?? 0
+                  values[date] ?? 0,
+                  future:
+                  this.selectedYear === this.today.getFullYear() &&
+                  this.selectedMonth === this.today.getMonth() &&
+                  day > this.today.getDate()
               });
             }
 
@@ -776,8 +768,11 @@ panel.plugin("felix-rabe/pure-stats", {
                       item.date
                     "
                     class="pure-stats-bar"
-                    :class="{ 'is-zero': Number(item.hits) === 0 }"
-                    @mouseenter="hovered = item"
+                    :class="{
+                      'is-zero': Number(item.hits) === 0,
+                      'is-future': item.future
+                    }"
+                    @mouseenter="Number(item.hits) > 0 && !item.future && (hovered = item)"
                     @mouseleave="hovered = null"
                   >
                     <div

@@ -157,8 +157,12 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  cursor: pointer;
+  cursor: default;
 
+}
+
+.pure-stats-bar:not(.is-zero):not(.is-future) {
+  cursor: pointer;
 }
 
 .pure-stats-bar-value {
