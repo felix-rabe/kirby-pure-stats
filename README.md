@@ -4,14 +4,14 @@ Page-view stats for websites running with Kirby CMS.
 
 On each page visit, it stores the page identifier and the date in a local SQLite database and visualizes this data in the Kirby Panel.
 
-No IPs.
-No cookies.
-No referrers.
-No identification.
-No visitor profiles.
-No campaigns.
-No funnels.
-No bot filtering.
+No IPs.<br>
+No cookies.<br>
+No referrers.<br>
+No identification.<br>
+No visitor profiles.<br>
+No campaigns.<br>
+No funnels.<br>
+No bot filtering.<br>
 **Pure stats.**
 
 ## Panel Preview
