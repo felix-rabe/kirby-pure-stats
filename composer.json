@@ -1,0 +1,19 @@
+{
+  "name": "felix-rabe/kirby-pure-stats",
+  "description": "Lightweight, privacy-friendly analytics for Kirby CMS.",
+  "type": "kirby-plugin",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Felix Rabe",
+      "homepage": "https://www.felixrabe.de"
+    }
+  ],
+  "require": {
+    "getkirby/cms": "^5.0",
+    "getkirby/composer-installer": "^1.2"
+  },
+  "extra": {
+    "installer-name": "kirby-pure-stats"
+  }
+}

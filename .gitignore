@@ -1,0 +1,9 @@
+.DS_Store
+Thumbs.db
+
+/vendor/
+composer.lock
+
+*.sqlite
+*.sqlite3
+*.db

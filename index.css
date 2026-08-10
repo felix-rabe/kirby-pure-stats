@@ -1,0 +1,302 @@
+/* ---------------------------------------
+   Total
+--------------------------------------- */
+
+.pure-stats-total {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: var(--color-white);
+  box-shadow: var(--shadow);
+}
+
+.pure-stats-total strong {
+  display: block;
+  font-size: 2rem;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+
+/* ---------------------------------------
+   Sections
+--------------------------------------- */
+
+.pure-stats-section {
+  margin-top: 2rem;
+}
+
+.pure-stats-section h2 {
+  margin-bottom: 1rem;
+  font-size: var(--text-base);
+  font-weight: var(--font-bold);
+}
+
+
+/* ---------------------------------------
+   Toolbar
+--------------------------------------- */
+
+.pure-stats-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+
+/* Period navigation */
+
+.pure-stats-period-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2rem;
+}
+
+.pure-stats-period-button {
+  appearance: none;
+  border: 0;
+  background: var(--color-gray-200);
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border-radius: var(--rounded);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--color-black);
+  font: inherit;
+  font-size: 1.25rem;
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition:
+    background 150ms ease,
+    opacity 150ms ease;
+}
+
+.pure-stats-period-button:hover:not(:disabled) {
+  background: var(--color-gray-300);
+}
+
+.pure-stats-period-button:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.pure-stats-period-label {
+  min-width: 9rem;
+  text-align: center;
+}
+
+
+/* Range navigation */
+
+.pure-stats-range {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+}
+
+.pure-stats-range button {
+  appearance: none;
+  border: 0;
+  padding: 0.4rem 0.65rem;
+  border-radius: var(--rounded);
+
+  background: transparent;
+  color: var(--color-gray-600);
+  font: inherit;
+
+  cursor: pointer;
+
+  transition:
+    background 150ms ease,
+    color 150ms ease;
+}
+
+.pure-stats-range button:hover {
+  background: var(--color-gray-200);
+}
+
+.pure-stats-range button.active {
+  background: var(--color-black);
+  color: var(--color-white);
+}
+
+
+/* ---------------------------------------
+   Chart
+--------------------------------------- */
+
+.pure-stats-chart-wrapper {
+  position: relative;
+  padding: 3rem 1rem 2.5rem;
+  background: var(--color-white);
+  box-shadow: var(--shadow);
+}
+
+.pure-stats-chart {
+  height: 14rem;
+
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.pure-stats-bar {
+  flex: 1;
+  height: 100%;
+  min-width: 0;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  cursor: pointer;
+
+}
+
+.pure-stats-bar-value {
+  width: 100%;
+  max-width: 10px;
+  min-height: 1px;
+
+  background-color: rgba(0, 0, 0, 0);
+  border: 2px solid var(--color-black);
+
+  transform-origin: bottom;
+  animation: pure-stats-grow 600ms ease-out both;
+  transition: background-color 300ms ease;
+
+}
+
+.pure-stats-bar:hover .pure-stats-bar-value {
+   background-color: rgba(0, 0, 0, 1);
+}
+
+@keyframes pure-stats-grow {
+  from {
+    transform: scaleY(0);
+  }
+
+  to {
+    transform: scaleY(1);
+  }
+}
+
+.pure-stats-bar.is-zero .pure-stats-bar-value {
+  min-height: 0;
+  border: 0;
+}
+
+
+/* ---------------------------------------
+   Tooltip
+--------------------------------------- */
+
+.pure-stats-tooltip {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2;
+
+  display: flex;
+  gap: 0.5rem;
+}
+
+.pure-stats-tooltip span {
+  color: var(--color-gray-600);
+}
+
+
+/* ---------------------------------------
+   X axis
+--------------------------------------- */
+
+.pure-stats-axis {
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  height: 1rem;
+
+  display: flex;
+}
+
+.pure-stats-axis-label {
+  flex: 1;
+  min-width: 0;
+
+  text-align: center;
+  font-size: var(--text-xs);
+  color: var(--color-text-dimmed);
+}
+
+
+/* ---------------------------------------
+   Responsive
+--------------------------------------- */
+
+@media (max-width: 700px) {
+  .pure-stats-toolbar {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .pure-stats-period-nav {
+    order: 2;
+  }
+
+  .pure-stats-range {
+    order: 1;
+    width: 100%;
+  }
+
+  .pure-stats-chart-wrapper {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .pure-stats-axis {
+    left: 0.75rem;
+    right: 0.75rem;
+  }
+}
+
+
+.pure-stats-info {
+  max-width: 56rem;
+  padding-top: 2rem;
+}
+
+.pure-stats-info-block {
+  margin-bottom: 2rem;
+}
+
+.pure-stats-info h2 {
+  margin-bottom: 0.75rem;
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+}
+
+.pure-stats-info h3 {
+  margin-bottom: 0.5rem;
+  font-size: var(--text-sm);
+  font-weight: var(--font-bold);
+}
+
+.pure-stats-info p {
+  max-width: 42rem;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+.pure-stats-info-grid {
+  margin-top: 3rem;
+}
+
