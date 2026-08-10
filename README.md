@@ -24,7 +24,7 @@ Download or clone this repository into:
 
 `site/plugins/kirby-pure-stats`
 
-Pure Stats will then appear as “Stats” in the Kirby Panel Navigation.
+Pure Stats will then appear as **Stats** in the Kirby Panel Navigation.
 
 ## Features
 
