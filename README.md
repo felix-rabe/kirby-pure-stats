@@ -30,6 +30,12 @@ Pure Stats will then appear as “Stats” in the Kirby Panel Navigation.
 
 - Data is stored in `site/stats/pure-stats.sqlite`
 - Logged-in Kirby Panel users are excluded from the stats
+- Dates are recorded using the server's PHP timezone
+
+## Requirements
+
+- Kirby 5
+- PHP with PDO SQLite support
 
 ## License
 
