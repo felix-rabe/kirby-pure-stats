@@ -51,6 +51,84 @@ function pureStatsDatabase(Kirby $kirby, bool $create = true): ?PDO
     }
 }
 
+/**
+ * Checks a YYYY-MM-DD date used by the stats API.
+ */
+function pureStatsValidDate(?string $date): bool
+{
+    if ($date === null) {
+        return false;
+    }
+
+    $parsed = DateTimeImmutable::createFromFormat('!Y-m-d', $date);
+
+    return $parsed !== false && $parsed->format('Y-m-d') === $date;
+}
+
+/**
+ * Loads only the rows needed for the requested date range.
+ */
+function pureStatsPageviews(Kirby $kirby, string $from, string $to): array
+{
+    try {
+        $db = pureStatsDatabase($kirby, false);
+
+        if ($db === null) {
+            return [];
+        }
+
+        $statement = $db->prepare(
+            'SELECT
+                date,
+                page,
+                hits
+             FROM pageviews
+             WHERE date >= :from
+               AND date <= :to
+             ORDER BY
+                date ASC,
+                page ASC'
+        );
+
+        $statement->execute([
+            ':from' => $from,
+            ':to'   => $to,
+        ]);
+
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Throwable $error) {
+        return [];
+    }
+}
+
+/**
+ * Returns the first day for which Pure Stats has data.
+ */
+function pureStatsFirstDate(Kirby $kirby): ?string
+{
+    try {
+        $db = pureStatsDatabase($kirby, false);
+
+        if ($db === null) {
+            return null;
+        }
+
+        $statement = $db->query(
+            'SELECT MIN(date) FROM pageviews'
+        );
+
+        if ($statement === false) {
+            return null;
+        }
+
+        $date = $statement->fetchColumn();
+
+        return is_string($date) && $date !== '' ? $date : null;
+    } catch (Throwable $error) {
+        return null;
+    }
+}
+
 Kirby::plugin('felix-rabe/pure-stats', [
     'options' => [
         'enabled' => true,
@@ -98,41 +176,40 @@ Kirby::plugin('felix-rabe/pure-stats', [
         },
     ],
 
+    'api' => [
+        'routes' => function ($kirby) {
+            return [
+                [
+                    'pattern' => 'pure-stats',
+                    'method'  => 'GET',
+                    'action'  => function () use ($kirby) {
+                        $query = $kirby->request()->query();
+                        $from = $query->get('from');
+                        $to = $query->get('to');
+
+                        if (
+                            pureStatsValidDate($from) === false ||
+                            pureStatsValidDate($to) === false ||
+                            $from > $to
+                        ) {
+                            return [
+                                'pageviews' => [],
+                                'firstDate' => pureStatsFirstDate($kirby),
+                            ];
+                        }
+
+                        return [
+                            'pageviews' => pureStatsPageviews($kirby, $from, $to),
+                            'firstDate' => pureStatsFirstDate($kirby),
+                        ];
+                    },
+                ],
+            ];
+        },
+    ],
+
     'areas' => [
         'stats' => function ($kirby) {
-
-            /*
-             * Load raw pageview data
-             */
-            $getPageviews = function () use ($kirby): array {
-                try {
-                    $db = pureStatsDatabase($kirby, false);
-
-                    if ($db === null) {
-                        return [];
-                    }
-
-                    $statement = $db->query(
-                        'SELECT
-                            date,
-                            page,
-                            hits
-                         FROM pageviews
-                         ORDER BY
-                            date ASC,
-                            page ASC'
-                    );
-
-                    if ($statement === false) {
-                        return [];
-                    }
-
-                    return $statement->fetchAll(PDO::FETCH_ASSOC);
-                } catch (Throwable $error) {
-                    return [];
-                }
-            };
-
             return [
                 'label' => 'Stats',
                 'icon'  => 'chart',
@@ -143,18 +220,13 @@ Kirby::plugin('felix-rabe/pure-stats', [
                     [
                         'pattern' => 'stats',
 
-                        'action' => function () use ($getPageviews) {
+                        'action' => function () {
                             return [
                                 'component' =>
                                     'k-pure-stats-view',
 
                                 'title' =>
                                     'Stats',
-
-                                'props' => [
-                                    'pageviews' =>
-                                        $getPageviews(),
-                                ],
                             ];
                         },
                     ],

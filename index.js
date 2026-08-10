@@ -1,15 +1,14 @@
 panel.plugin("felix-rabe/pure-stats", {
   components: {
     "k-pure-stats-view": {
-      props: {
-        pageviews: Array
-      },
-
       data() {
         const today = new Date();
 
         return {
           hovered: null,
+          pageviews: [],
+          firstDate: null,
+          requestId: 0,
           range: "month",
           selectedYear: today.getFullYear(),
           selectedMonth: today.getMonth(),
@@ -27,20 +26,13 @@ panel.plugin("felix-rabe/pure-stats", {
         },
 
         firstDataDate() {
-          if (!this.pageviews.length) {
+          if (!this.firstDate) {
             return null;
           }
 
-          const dates = this.pageviews
-            .map(
-              item =>
-                new Date(
-                  item.date + "T00:00:00"
-                )
-            )
-            .sort((a, b) => a - b);
-
-          return dates[0];
+          return new Date(
+            this.firstDate + "T00:00:00"
+          );
         },
 
         canGoPrevious() {
@@ -139,96 +131,18 @@ panel.plugin("felix-rabe/pure-stats", {
           return 10;
         },
 
-        /*
-         * Raw DB rows belonging to the
-         * currently selected period.
-         */
-        filteredPageviews() {
-          if (!this.pageviews.length) {
-            return [];
-          }
-
-          if (this.range === "year") {
-            return this.pageviews.filter(
-              item => {
-                const date =
-                  new Date(
-                    item.date +
-                      "T00:00:00"
-                  );
-
-                return (
-                  date.getFullYear() ===
-                  this.selectedYear
-                );
-              }
-            );
-          }
-
-          if (this.range === "month") {
-            return this.pageviews.filter(
-              item => {
-                const date =
-                  new Date(
-                    item.date +
-                      "T00:00:00"
-                  );
-
-                return (
-                  date.getFullYear() ===
-                    this.selectedYear &&
-                  date.getMonth() ===
-                    this.selectedMonth
-                );
-              }
-            );
-          }
-
-          if (this.range === "week") {
-            const start =
-              new Date(this.today);
-
-            start.setDate(
-              start.getDate() - 6
-            );
-
-            return this.pageviews.filter(
-              item => {
-                const date =
-                  new Date(
-                    item.date +
-                      "T00:00:00"
-                  );
-
-                return (
-                  date >= start &&
-                  date <= this.today
-                );
-              }
-            );
-          }
-
-          return [];
-        },
-
-        /*
-         * Total for selected period.
-         */
         filteredTotal() {
-          return this.filteredPageviews.reduce(
+          return this.pageviews.reduce(
             (sum, item) =>
               sum + Number(item.hits),
             0
           );
         },
 
-        /*
-         * Page table for selected period.
-         */
         filteredPages() {
           const pages = {};
 
-          this.filteredPageviews.forEach(
+          this.pageviews.forEach(
             item => {
               if (!pages[item.page]) {
                 pages[item.page] = 0;
@@ -250,17 +164,10 @@ panel.plugin("felix-rabe/pure-stats", {
             );
         },
 
-        /*
-         * Chart data for selected period.
-         */
         chartData() {
-          if (!this.pageviews.length) {
-            return [];
-          }
-
           const values = {};
 
-          this.filteredPageviews.forEach(
+          this.pageviews.forEach(
             item => {
               values[item.date] =
                 (values[item.date] || 0) +
@@ -284,7 +191,7 @@ panel.plugin("felix-rabe/pure-stats", {
             ) {
               let hits = 0;
 
-              this.filteredPageviews.forEach(
+              this.pageviews.forEach(
                 item => {
                   const date =
                     new Date(
@@ -326,8 +233,10 @@ panel.plugin("felix-rabe/pure-stats", {
                   this.selectedYear,
                 hits,
                 future:
-                this.selectedYear === this.today.getFullYear() &&
-                month > this.today.getMonth()
+                  this.selectedYear ===
+                    this.today.getFullYear() &&
+                  month >
+                    this.today.getMonth()
               });
             }
 
@@ -376,9 +285,12 @@ panel.plugin("felix-rabe/pure-stats", {
                 hits:
                   values[date] ?? 0,
                 future:
-                  this.selectedYear === this.today.getFullYear() &&
-                  this.selectedMonth === this.today.getMonth() &&
-                  day > this.today.getDate()
+                  this.selectedYear ===
+                    this.today.getFullYear() &&
+                  this.selectedMonth ===
+                    this.today.getMonth() &&
+                  day >
+                    this.today.getDate()
               });
             }
 
@@ -442,6 +354,102 @@ panel.plugin("felix-rabe/pure-stats", {
       },
 
       methods: {
+        getDateRange() {
+          if (this.range === "year") {
+            return {
+              from:
+                this.selectedYear +
+                "-01-01",
+              to:
+                this.selectedYear +
+                "-12-31"
+            };
+          }
+
+          if (this.range === "month") {
+            const from = new Date(
+              this.selectedYear,
+              this.selectedMonth,
+              1
+            );
+
+            const to = new Date(
+              this.selectedYear,
+              this.selectedMonth + 1,
+              0
+            );
+
+            return {
+              from:
+                this.toDateString(from),
+              to:
+                this.toDateString(to)
+            };
+          }
+
+          const to =
+            new Date(this.today);
+
+          const from =
+            new Date(this.today);
+
+          from.setDate(
+            from.getDate() - 6
+          );
+
+          return {
+            from:
+              this.toDateString(from),
+            to:
+              this.toDateString(to)
+          };
+        },
+
+        async loadPageviews() {
+          const requestId =
+            ++this.requestId;
+
+          const dates =
+            this.getDateRange();
+
+          this.hovered = null;
+
+          try {
+            const response =
+              await this.$api.get(
+                "pure-stats",
+                dates
+              );
+
+            if (
+              requestId !==
+              this.requestId
+            ) {
+              return;
+            }
+
+            this.pageviews =
+              Array.isArray(
+                response.pageviews
+              )
+                ? response.pageviews
+                : [];
+
+            this.firstDate =
+              response.firstDate ||
+              null;
+          } catch (error) {
+            if (
+              requestId !==
+              this.requestId
+            ) {
+              return;
+            }
+
+            this.pageviews = [];
+          }
+        },
+
         setRange(range) {
           this.range = range;
 
@@ -459,6 +467,8 @@ panel.plugin("felix-rabe/pure-stats", {
           }
 
           this.hovered = null;
+
+          this.loadPageviews();
         },
 
         previousPeriod() {
@@ -482,6 +492,8 @@ panel.plugin("felix-rabe/pure-stats", {
           }
 
           this.hovered = null;
+
+          this.loadPageviews();
         },
 
         nextPeriod() {
@@ -505,10 +517,14 @@ panel.plugin("felix-rabe/pure-stats", {
           }
 
           this.hovered = null;
+
+          this.loadPageviews();
         },
 
         showAxisLabel(index) {
-          if (this.range !== "month") {
+          if (
+            this.range !== "month"
+          ) {
             return true;
           }
 
@@ -551,7 +567,8 @@ panel.plugin("felix-rabe/pure-stats", {
             }
           ).format(
             new Date(
-              date + "T00:00:00"
+              date +
+                "T00:00:00"
             )
           );
         },
@@ -559,7 +576,8 @@ panel.plugin("felix-rabe/pure-stats", {
         formatDayMonth(date) {
           const d =
             new Date(
-              date + "T00:00:00"
+              date +
+                "T00:00:00"
             );
 
           return (
@@ -582,7 +600,8 @@ panel.plugin("felix-rabe/pure-stats", {
             }
           ).format(
             new Date(
-              date + "T00:00:00"
+              date +
+                "T00:00:00"
             )
           );
         },
@@ -595,13 +614,16 @@ panel.plugin("felix-rabe/pure-stats", {
             }
           ).format(
             new Date(
-              date + "T00:00:00"
+              date +
+                "T00:00:00"
             )
           );
         }
       },
 
       mounted() {
+        this.loadPageviews();
+
         const chart =
           this.$refs.chart;
 
@@ -743,11 +765,19 @@ panel.plugin("felix-rabe/pure-stats", {
                   "
                   class="pure-stats-bar"
                   :class="{
-                    'is-zero': Number(item.hits) === 0,
-                    'is-future': item.future
+                    'is-zero':
+                      Number(item.hits) === 0,
+                    'is-future':
+                      item.future
                   }"
-                  @mouseenter="Number(item.hits) > 0 && !item.future && (hovered = item)"
-                  @mouseleave="hovered = null"
+                  @mouseenter="
+                    Number(item.hits) > 0 &&
+                    !item.future &&
+                    (hovered = item)
+                  "
+                  @mouseleave="
+                    hovered = null
+                  "
                 >
                   <div
                     class="pure-stats-bar-value"
@@ -759,7 +789,8 @@ panel.plugin("felix-rabe/pure-stats", {
                           100
                         ) + '%',
                       animationDelay:
-                        (index * 20) + 'ms'
+                        (index * 20) +
+                        'ms'
                     }"
                   />
                 </div>
