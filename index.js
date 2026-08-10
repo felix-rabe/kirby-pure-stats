@@ -2,11 +2,7 @@ panel.plugin("felix-rabe/pure-stats", {
   components: {
     "k-pure-stats-view": {
       props: {
-        pageviews: Array,
-        tab: {
-          type: String,
-          default: "data"
-        }
+        pageviews: Array
       },
 
       data() {
@@ -23,21 +19,6 @@ panel.plugin("felix-rabe/pure-stats", {
       },
 
       computed: {
-        tabs() {
-          return [
-            {
-              name: "data",
-              label: "Data",
-              link: "/stats"
-            },
-            {
-              name: "info",
-              label: "Info",
-              link: "/stats/info"
-            }
-          ];
-        },
-
         today() {
           const date = new Date();
           date.setHours(0, 0, 0, 0);
@@ -394,7 +375,7 @@ panel.plugin("felix-rabe/pure-stats", {
                   this.formatDate(date),
                 hits:
                   values[date] ?? 0,
-                  future:
+                future:
                   this.selectedYear === this.today.getFullYear() &&
                   this.selectedMonth === this.today.getMonth() &&
                   day > this.today.getDate()
@@ -659,226 +640,168 @@ panel.plugin("felix-rabe/pure-stats", {
             Stats
           </k-header>
 
-          <k-tabs
-            :tabs="tabs"
-            :tab="tab"
-          />
+          <div class="pure-stats-toolbar">
 
-          <template v-if="tab === 'data'">
+            <div class="pure-stats-period-nav">
 
-            <div class="pure-stats-toolbar">
-
-              <div class="pure-stats-period-nav">
-
-                <template
-                  v-if="range === 'year' || range === 'month'"
-                >
-                  <button
-                    class="pure-stats-period-button"
-                    :disabled="!canGoPrevious"
-                    @click="previousPeriod"
-                  >
-                    ‹
-                  </button>
-
-                  <span class="pure-stats-period-label">
-                    {{ periodLabel }}
-                  </span>
-
-                  <button
-                    class="pure-stats-period-button"
-                    :disabled="!canGoNext"
-                    @click="nextPeriod"
-                  >
-                    ›
-                  </button>
-                </template>
-
-              </div>
-
-              <div class="pure-stats-range">
-
+              <template
+                v-if="range === 'year' || range === 'month'"
+              >
                 <button
-                  :class="{ active: range === 'year' }"
-                  @click="setRange('year')"
+                  class="pure-stats-period-button"
+                  :disabled="!canGoPrevious"
+                  @click="previousPeriod"
                 >
-                  This Year
+                  ‹
                 </button>
 
-                <button
-                  :class="{ active: range === 'month' }"
-                  @click="setRange('month')"
-                >
-                  This Month
-                </button>
+                <span class="pure-stats-period-label">
+                  {{ periodLabel }}
+                </span>
 
                 <button
-                  :class="{ active: range === 'week' }"
-                  @click="setRange('week')"
+                  class="pure-stats-period-button"
+                  :disabled="!canGoNext"
+                  @click="nextPeriod"
                 >
-                  Last 7 Days
+                  ›
                 </button>
-
-              </div>
+              </template>
 
             </div>
 
-            <div class="pure-stats-total">
-              <strong>
-                {{ filteredTotal }}
-              </strong>
+            <div class="pure-stats-range">
 
-              <span>
-                Pageviews
-              </span>
+              <button
+                :class="{ active: range === 'year' }"
+                @click="setRange('year')"
+              >
+                This Year
+              </button>
+
+              <button
+                :class="{ active: range === 'month' }"
+                @click="setRange('month')"
+              >
+                This Month
+              </button>
+
+              <button
+                :class="{ active: range === 'week' }"
+                @click="setRange('week')"
+              >
+                Last 7 Days
+              </button>
+
             </div>
 
-            <section class="pure-stats-section">
+          </div>
+
+          <div class="pure-stats-total">
+            <strong>
+              {{ filteredTotal }}
+            </strong>
+
+            <span>
+              Pageviews
+            </span>
+          </div>
+
+          <section class="pure-stats-section">
+
+            <div
+              ref="chart"
+              class="pure-stats-chart-wrapper"
+            >
 
               <div
-                ref="chart"
-                class="pure-stats-chart-wrapper"
+                v-if="hovered"
+                class="pure-stats-tooltip"
               >
+                <strong>
+                  {{ hovered.tooltip }}
+                </strong>
+
+                <span>
+                  {{ hovered.hits }}
+                  Pageviews
+                </span>
+              </div>
+
+              <div class="pure-stats-chart">
 
                 <div
-                  v-if="hovered"
-                  class="pure-stats-tooltip"
+                  v-for="(item, index) in chartData"
+                  :key="
+                    range +
+                    '-' +
+                    selectedYear +
+                    '-' +
+                    selectedMonth +
+                    '-' +
+                    item.date
+                  "
+                  class="pure-stats-bar"
+                  :class="{
+                    'is-zero': Number(item.hits) === 0,
+                    'is-future': item.future
+                  }"
+                  @mouseenter="Number(item.hits) > 0 && !item.future && (hovered = item)"
+                  @mouseleave="hovered = null"
                 >
-                  <strong>
-                    {{ hovered.tooltip }}
-                  </strong>
-
-                  <span>
-                    {{ hovered.hits }}
-                    Pageviews
-                  </span>
-                </div>
-
-                <div class="pure-stats-chart">
-
                   <div
-                    v-for="(item, index) in chartData"
-                    :key="
-                      range +
-                      '-' +
-                      selectedYear +
-                      '-' +
-                      selectedMonth +
-                      '-' +
-                      item.date
-                    "
-                    class="pure-stats-bar"
-                    :class="{
-                      'is-zero': Number(item.hits) === 0,
-                      'is-future': item.future
+                    class="pure-stats-bar-value"
+                    :style="{
+                      height:
+                        (
+                          Number(item.hits) /
+                          maxHits *
+                          100
+                        ) + '%',
+                      animationDelay:
+                        (index * 20) + 'ms'
                     }"
-                    @mouseenter="Number(item.hits) > 0 && !item.future && (hovered = item)"
-                    @mouseleave="hovered = null"
-                  >
-                    <div
-                      class="pure-stats-bar-value"
-                      :style="{
-                        height:
-                          (
-                            Number(item.hits) /
-                            maxHits *
-                            100
-                          ) + '%',
-                        animationDelay:
-                          (index * 20) + 'ms'
-                      }"
-                    />
-                  </div>
-
-                </div>
-
-                <div class="pure-stats-axis">
-
-                  <span
-                    v-for="(item, index) in chartData"
-                    :key="item.date"
-                    class="pure-stats-axis-label"
-                  >
-                    {{
-                      showAxisLabel(index)
-                        ? item.label
-                        : ''
-                    }}
-                  </span>
-
+                  />
                 </div>
 
               </div>
 
-            </section>
+              <div class="pure-stats-axis">
 
-            <section class="pure-stats-section">
-
-              <k-table
-                :columns="{
-                  page: {
-                    label: 'Page'
-                  },
-                  hits: {
-                    label: 'Pageviews',
-                    type: 'number'
-                  }
-                }"
-                :rows="filteredPages"
-              />
-
-            </section>
-
-          </template>
-
-          <template v-else>
-
-            <section class="pure-stats-info">
-
-              <div class="pure-stats-info-block">
-                <h2>About Pure Stats</h2>
-
-                <p>
-                  Pure Stats is a lightweight, privacy-friendly
-                  analytics plugin for Kirby. It tracks pageviews
-                  without cookies or external services and displays
-                  the results directly in the Kirby Panel.
-                </p>
-              </div>
-
-              <div class="pure-stats-info-grid">
-
-                <div class="pure-stats-info-block">
-                  <h3>Storage</h3>
-
-                  <p>
-                    Analytics data is stored locally in a SQLite
-                    database.
-                  </p>
-                </div>
-
-                <div class="pure-stats-info-block">
-                  <h3>Privacy</h3>
-
-                  <p>
-                    Logged-in Panel users are excluded from tracking.
-                    No cookies or external analytics services are used.
-                  </p>
-                </div>
-
-                <div class="pure-stats-info-block">
-                  <h3>Data collected</h3>
-
-                  <p>
-                    Date, page identifier and pageviews.
-                  </p>
-                </div>
+                <span
+                  v-for="(item, index) in chartData"
+                  :key="item.date"
+                  class="pure-stats-axis-label"
+                >
+                  {{
+                    showAxisLabel(index)
+                      ? item.label
+                      : ''
+                  }}
+                </span>
 
               </div>
 
-            </section>
+            </div>
 
-          </template>
+          </section>
+
+          <section class="pure-stats-section">
+
+            <k-table
+              :columns="{
+                page: {
+                  label: 'Page'
+                },
+                hits: {
+                  label: 'Pageviews',
+                  type: 'number'
+                }
+              }"
+              :rows="filteredPages"
+            />
+
+          </section>
 
         </k-panel-inside>
       `

@@ -140,10 +140,6 @@ Kirby::plugin('felix-rabe/pure-stats', [
                 'link'  => 'stats',
 
                 'views' => [
-
-                    /*
-                     * Data
-                     */
                     [
                         'pattern' => 'stats',
 
@@ -156,36 +152,8 @@ Kirby::plugin('felix-rabe/pure-stats', [
                                     'Stats',
 
                                 'props' => [
-                                    'tab' =>
-                                        'data',
-
                                     'pageviews' =>
                                         $getPageviews(),
-                                ],
-                            ];
-                        },
-                    ],
-
-                    /*
-                     * Info
-                     */
-                    [
-                        'pattern' => 'stats/info',
-
-                        'action' => function () {
-                            return [
-                                'component' =>
-                                    'k-pure-stats-view',
-
-                                'title' =>
-                                    'Stats',
-
-                                'props' => [
-                                    'tab' =>
-                                        'info',
-
-                                    'pageviews' =>
-                                        [],
                                 ],
                             ];
                         },
