@@ -16,7 +16,7 @@ No bot filtering.<br>
 
 ## Panel Preview
 
-![Kirby Pure Stats Panel](assets/pure-stats-panel-01.png)
+![Kirby Pure Stats Panel](assets/pure-stats-panel-02.png)
 
 ## Installation
 

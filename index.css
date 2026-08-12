@@ -140,7 +140,7 @@
 
   display: flex;
   align-items: flex-end;
-  gap: 2px;
+  /* gap: 2px; */
 }
 
 .pure-stats-bar {
@@ -158,7 +158,7 @@
 .pure-stats-bar-value {
   width: 100%;
   max-width: 10px;
-  min-height: 1px;
+  min-height: 10px;
 
   background-color: rgba(0, 0, 0, 0);
   border: 2px solid var(--color-black);
@@ -229,6 +229,54 @@
   text-align: center;
   font-size: var(--text-xs);
   color: var(--color-text-dimmed);
+}
+
+
+/* ---------------------------------------
+   Table
+--------------------------------------- */
+
+.pure-stats-table {
+  background: var(--color-white);
+  box-shadow: var(--shadow);
+}
+
+.pure-stats-table-header,
+.pure-stats-table-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+}
+
+.pure-stats-table-header {
+  color: var(--color-text-dimmed);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.pure-stats-table-header span,
+.pure-stats-table-row span {
+  padding: 0.75rem 1rem;
+}
+
+.pure-stats-table-header span:first-child,
+.pure-stats-table-row span:first-child {
+  border-right: 1px solid var(--color-border);
+}
+
+.pure-stats-table-row {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.pure-stats-table-row:last-child {
+  border-bottom: 0;
+}
+
+.pure-stats-table-hits {
+  text-align: left;
+}
+
+.pure-stats-table-page {
+  text-transform: capitalize;
 }
 
 

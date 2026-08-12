@@ -139,10 +139,39 @@ panel.plugin("felix-rabe/pure-stats", {
           );
         },
 
+        tablePageviews() {
+          if (!this.hovered) {
+            return this.pageviews;
+          }
+
+          /*
+           * THIS YEAR
+           * Hover filters the table by month
+           */
+          if (this.range === "year") {
+            const month =
+              this.hovered.date.slice(0, 7);
+
+            return this.pageviews.filter(
+              item =>
+                item.date.slice(0, 7) === month
+            );
+          }
+
+          /*
+           * THIS MONTH / LAST 7 DAYS
+           * Hover filters the table by day
+           */
+          return this.pageviews.filter(
+            item =>
+              item.date === this.hovered.date
+          );
+        },
+
         filteredPages() {
           const pages = {};
 
-          this.pageviews.forEach(
+          this.tablePageviews.forEach(
             item => {
               if (!pages[item.page]) {
                 pages[item.page] = 0;
@@ -158,6 +187,9 @@ panel.plugin("felix-rabe/pure-stats", {
               page,
               hits
             }))
+            .filter(
+              item => item.hits > 0
+            )
             .sort(
               (a, b) =>
                 b.hits - a.hits
@@ -819,18 +851,26 @@ panel.plugin("felix-rabe/pure-stats", {
 
           <section class="pure-stats-section">
 
-            <k-table
-              :columns="{
-                page: {
-                  label: 'Page'
-                },
-                hits: {
-                  label: 'Pageviews',
-                  type: 'number'
-                }
-              }"
-              :rows="filteredPages"
-            />
+            <div class="pure-stats-table">
+              <div class="pure-stats-table-header">
+                <span>Page</span>
+                <span>Pageviews</span>
+              </div>
+
+              <div
+                v-for="item in filteredPages"
+                :key="item.page"
+                class="pure-stats-table-row"
+              >
+                <span class="pure-stats-table-page">
+                  {{ item.page }}
+                </span>
+
+                <span class="pure-stats-table-hits">
+                  {{ item.hits }}
+                </span>
+              </div>
+            </div>
 
           </section>
 
