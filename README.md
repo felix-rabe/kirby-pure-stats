@@ -40,7 +40,9 @@ Pure Stats will then appear as **Stats** in the Kirby Panel Navigation.
 ## Editor’s Note
 
 I find it increasingly difficult to evaluate whether analytics tools require user consent. At the same time, adding a consent banner solely for basic website statistics can negatively affect the user experience and inevitably results in incomplete data when users opt out.
+
 Pure Stats proposes a deliberately minimal approach: enough information to understand whether and how a website is being used, without persistent identifiers, user profiles, cookies, or the storage of personal user data.
+
 It is intended for situations where simple, aggregate statistics are sufficient and detailed visitor tracking is neither necessary nor desired.
 
 ## License
