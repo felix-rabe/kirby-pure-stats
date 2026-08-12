@@ -2,6 +2,7 @@
   "name": "felix-rabe/kirby-pure-stats",
   "description": "Simple, privacy-friendly page-view stats for Kirby CMS.",
   "type": "kirby-plugin",
+  "version": "1.0.1",
   "license": "MIT",
   "homepage": "https://github.com/felix-rabe/kirby-pure-stats",
   "authors": [
