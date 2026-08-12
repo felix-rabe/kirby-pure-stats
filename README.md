@@ -45,6 +45,8 @@ Pure Stats proposes a deliberately minimal approach: enough information to under
 
 It is intended for situations where simple, aggregate statistics are sufficient and detailed visitor tracking is neither necessary nor desired.
 
+Pure Stats is not intended as legal advice. Whether consent is required ultimately depends on your implementation and applicable law.
+
 ## License
 
 MIT © 2026 Felix Rabe
