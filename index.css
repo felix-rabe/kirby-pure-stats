@@ -5,7 +5,7 @@
 .pure-stats-total {
   margin-bottom: 2rem;
   padding: 1rem;
-  background: var(--color-white);
+  background: light-dark(var(--color-white), var(--menu-color-back));
   box-shadow: var(--shadow);
 }
 
@@ -51,7 +51,7 @@
 .pure-stats-period-button {
   appearance: none;
   border: 0;
-  background: var(--color-gray-200);
+  background: transparent;
   width: 2rem;
   height: 2rem;
   padding: 0;
@@ -61,7 +61,7 @@
   align-items: center;
   justify-content: center;
 
-  color: var(--color-black);
+  color: light-dark(var(--color-black), var(--color-white));
   font: inherit;
   font-size: 1.25rem;
   line-height: 1;
@@ -74,11 +74,12 @@
 }
 
 .pure-stats-period-button:hover:not(:disabled) {
-  background: var(--color-gray-300);
+  background: transparent;
+  opacity: 0.6;
 }
 
 .pure-stats-period-button:disabled {
-  opacity: 0.25;
+  opacity: 0.2;
   cursor: default;
 }
 
@@ -104,7 +105,7 @@
   border-radius: var(--rounded);
 
   background: transparent;
-  color: var(--color-gray-600);
+  color: light-dark(var(--color-gray-600), var(--color-gray-400));
   font: inherit;
 
   cursor: pointer;
@@ -115,12 +116,12 @@
 }
 
 .pure-stats-range button:hover {
-  background: var(--color-gray-200);
+  background: light-dark(var(--color-gray-200), var(--color-gray-700));
 }
 
 .pure-stats-range button.active {
-  background: var(--color-black);
-  color: var(--color-white);
+  background: light-dark(var(--color-black), var(--color-white));
+  color: light-dark(var(--color-white), var(--color-black));
 }
 
 
@@ -131,7 +132,7 @@
 .pure-stats-chart-wrapper {
   position: relative;
   padding: 3rem 1rem 2.5rem;
-  background: var(--color-white);
+  background: light-dark(var(--color-white), var(--menu-color-back));
   box-shadow: var(--shadow);
 }
 
@@ -161,7 +162,7 @@
   min-height: 10px;
 
   background-color: rgba(0, 0, 0, 0);
-  border: 2px solid var(--color-black);
+  border: 2px solid currentColor;
 
   transform-origin: bottom;
   animation: pure-stats-grow 600ms ease-out both;
@@ -170,7 +171,7 @@
 
 .pure-stats-bar:not(.is-zero):not(.is-future):hover
   .pure-stats-bar-value {
-  background-color: rgba(0, 0, 0, 1);
+  background-color: currentColor;
 }
 
 .pure-stats-bar.is-zero .pure-stats-bar-value {
@@ -204,7 +205,7 @@
 }
 
 .pure-stats-tooltip span {
-  color: var(--color-gray-600);
+  color: light-dark(var(--color-gray-600), var(--color-gray-400));
 }
 
 
@@ -237,7 +238,7 @@
 --------------------------------------- */
 
 .pure-stats-table {
-  background: var(--color-white);
+  background: light-dark(var(--color-white), var(--menu-color-back));
   box-shadow: var(--shadow);
 }
 
