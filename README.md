@@ -36,6 +36,7 @@ Pure Stats will then appear as **Stats** in the Kirby Panel Navigation.
 
 - Kirby 5
 - PHP with PDO SQLite support
+- Vue runtime compiler must be enabled in the Kirby Panel (default setting)
 
 ## Editor’s Note
 
